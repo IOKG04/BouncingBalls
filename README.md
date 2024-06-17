@@ -5,7 +5,7 @@
 ## Todo
 
 - [ ] Single bouncing ball
-  - [ ] Keyboard input
+  - [x] Keyboard input
   - [ ] Displaying balls
   - [ ] Simulatig balls
     - [ ] Collision detection

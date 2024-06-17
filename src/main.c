@@ -1,30 +1,42 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <X11/Xlib.h>
-#include <X11/keysym.h>
-#include <X11/extensions/XTest.h>
+#include <termios.h>
+
+#include "inp.h"
+
+void disable_echo();
+void enable_echo();
 
 int main(int argc, char **argv){
-    Display *display = XOpenDisplay(NULL);
-    if(display == NULL){
-	fprintf(stderr, "Error opening display (%s, %i)\n", __FILE__, __LINE__);
-	exit(1);
+    int inp_err_code = initialize_inp();
+    if(inp_err_code != 0){
+	fprintf(stderr, "Error: %i at %s, %i\n", inp_err_code, __FILE__, __LINE__ - 2);
+	exit(inp_err_code);
     }
 
-    printf("Press <Esc> to exit\n");
-    char keys[32];
+    disable_echo();
     do{
-	XQueryKeymap(display, keys);
-	for(int i = 0; i < 32; ++i){
-	    for(int j = 0; j < 8; ++j){
-		printf("%i", (keys[i] >> j) & 1);
-	    }
-	}
-	printf("\n");
-	usleep(500);
-    } while(!(keys[1] & 0b10));
+	test_keys();
+	printf("%i %i\n", is_pressed_key(SPAWN_KEY), is_pressed_down(SPAWN_KEY));
+	usleep(500000);
+    } while(!is_pressed_key(EXIT_KEY));
+    enable_echo();
 
-    XCloseDisplay(display);
+    close_inp();
     exit(0);
+}
+
+// stolen from ChatGPT
+struct termios original_tty;
+void disable_echo(){
+    struct termios tty;
+    tcgetattr(STDIN_FILENO, &tty);
+    original_tty = tty;
+    tty.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &tty);
+}
+void enable_echo(){
+    tcsetattr(STDIN_FILENO, TCSANOW, &original_tty);
+    tcflush(STDIN_FILENO, TCIFLUSH);
 }
