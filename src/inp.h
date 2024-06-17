@@ -4,6 +4,7 @@
 // keycodes for important keys
 #define EXIT_KEY  9
 #define SPAWN_KEY 65
+// for more keycodes, https://gist.github.com/rickyzhang82/8581a762c9f9fc6ddb8390872552c250
 
 // initializes the input reader
 int initialize_inp();

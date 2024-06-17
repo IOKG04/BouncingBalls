@@ -1,14 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <termios.h>
-
 #include "inp.h"
+#include "screen_stuff.h"
 
-void disable_echo();
-void enable_echo();
 
 int main(int argc, char **argv){
+    while(1){
+	int r, c;
+	get_terminal_size(&r, &c);
+	printf("%i, %i\n", r, c);
+	usleep(500000);
+    }
+
+    /*
     int inp_err_code = initialize_inp();
     if(inp_err_code != 0){
 	fprintf(stderr, "Error: %i at %s, %i\n", inp_err_code, __FILE__, __LINE__ - 2);
@@ -24,19 +29,8 @@ int main(int argc, char **argv){
     enable_echo();
 
     close_inp();
+    */
+
     exit(0);
 }
 
-// stolen from ChatGPT
-struct termios original_tty;
-void disable_echo(){
-    struct termios tty;
-    tcgetattr(STDIN_FILENO, &tty);
-    original_tty = tty;
-    tty.c_lflag &= ~(ICANON | ECHO);
-    tcsetattr(STDIN_FILENO, TCSANOW, &tty);
-}
-void enable_echo(){
-    tcsetattr(STDIN_FILENO, TCSANOW, &original_tty);
-    tcflush(STDIN_FILENO, TCIFLUSH);
-}
