@@ -3,15 +3,17 @@
 #include <unistd.h>
 #include "inp.h"
 #include "screen_stuff.h"
+#include "vec2.h"
 
 
 int main(int argc, char **argv){
-    while(1){
-	int r, c;
-	get_terminal_size(&r, &c);
-	printf("%i, %i\n", r, c);
-	usleep(500000);
-    }
+    vec2 a = {3, 4};
+    double l = length_vec2(a);
+    vec2 b = normalized_vec2(a);
+    vec2 c = {2, 3};
+    a = cross_vec2(a, c);
+    a = cross_div_vec2(a, c);
+    printf("%lf, {%lf, %lf}, {%lf, %lf}\n", l, b.x, b.y, a.x, a.y);
 
     /*
     int inp_err_code = initialize_inp();
