@@ -1,4 +1,5 @@
 #include "vec2.h"
+#include "constants.h"
 
 #include "ball.h"
 
@@ -42,4 +43,11 @@ void render_ball(ball b, char *buffer, int width, int height){
 	    }
 	}
     }
+}
+
+// applies a balls velocity and gravity
+void base_step_ball(ball *b){
+    b->velocity = add_vec2(b->velocity, scale_vec2(GRAVITY, .5 * DELTA_TIME));
+    b->position = add_vec2(b->position, scale_vec2(b->velocity, DELTA_TIME));
+    b->velocity = add_vec2(b->velocity, scale_vec2(GRAVITY, .5 * DELTA_TIME));
 }

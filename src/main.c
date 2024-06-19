@@ -6,20 +6,24 @@
 #include "screen_stuff.h"
 #include "vec2.h"
 #include "ball.h"
-
+#include "constants.h"
 
 int main(int argc, char **argv){
     char buffer[256];
-    memset(buffer, ' ', 256);
-    ball b = {3, {4, 4}};
-    ball c = {3, {4, 11.5}};
-    ball d = {1, {9, 7}};
-    render_ball(b, buffer, 16, 16);
-    render_ball(c, buffer, 16, 16);
-    render_ball(d, buffer, 16, 16);
-    for(int i = 0; i < 256; ++i){
-	putchar(buffer[i]);
-	if(i % 16 == 15) putchar('\n');
+    ball b = {3, {4, 0}};
+    printf("\x1b[2J");
+    for(;;){
+	base_step_ball(&b);
+
+	memset(buffer, ' ', 256);
+        render_ball(b, buffer, 16, 16);
+
+	printf("\x1b[d");
+        for(int i = 0; i < 256; ++i){
+	   putchar(buffer[i]);
+	   if(i % 16 == 15) putchar('\n');
+        }
+	usleep(STEP_DELAY);
     }
 
     /*
