@@ -9,20 +9,25 @@
 #include "constants.h"
 
 int main(int argc, char **argv){
-    char buffer[256];
-    ball b = {3, {4, 0}};
+    char buffer[512];
+    ball b = {5, {6, 6}, {5, 0}};
     printf("\x1b[2J");
     for(;;){
-	base_step_ball(&b);
+	base_step_ball(&b, 32, 16);
 
-	memset(buffer, ' ', 256);
-        render_ball(b, buffer, 16, 16);
+	memset(buffer, ' ', sizeof(buffer));
+        render_ball(b, buffer, 32, 16);
 
 	printf("\x1b[d");
-        for(int i = 0; i < 256; ++i){
+#if IS_TOP_CLOSED
+	printf("+--------------------------------+\n");
+#endif
+        for(int i = 0; i < 512; ++i){
+	   if(i % 32 == 0) putchar('|');
 	   putchar(buffer[i]);
-	   if(i % 16 == 15) putchar('\n');
+	   if(i % 32 == 31) printf("|\n");
         }
+	printf("+--------------------------------+\n");
 	usleep(STEP_DELAY);
     }
 

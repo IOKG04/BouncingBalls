@@ -46,8 +46,30 @@ void render_ball(ball b, char *buffer, int width, int height){
 }
 
 // applies a balls velocity and gravity
-void base_step_ball(ball *b){
+void base_step_ball(ball *b, double width, double height){
     b->velocity = add_vec2(b->velocity, scale_vec2(GRAVITY, .5 * DELTA_TIME));
     b->position = add_vec2(b->position, scale_vec2(b->velocity, DELTA_TIME));
+    wall_collisions_ball(b, width, height);
     b->velocity = add_vec2(b->velocity, scale_vec2(GRAVITY, .5 * DELTA_TIME));
+}
+// applies wall collision
+void wall_collisions_ball(ball *b, double width, double height){
+    if(b->position.x - b->radius < 0){
+	b->position.x = b->radius;
+	b->velocity.x = -b->velocity.x;
+    }
+    else if(b->position.x + b->radius > width){
+	b->position.x = width - b->radius;
+	b->velocity.x = -b->velocity.x;
+    }
+    if(b->position.y + b->radius > height){
+	b->position.y = height - b->radius;
+	b->velocity.y = -b->velocity.y;
+    }
+#if IS_TOP_CLOSED
+    else if(b->position.y - b->radius < 0){
+	b->position.y = b->radius;
+	b->velocity.y = -b->velocity.y;
+    }
+#endif
 }

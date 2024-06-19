@@ -8,9 +8,10 @@
   - [x] Keyboard input
   - [x] Displaying balls
     - [ ] Make em not be stretched
-  - [ ] Simulatig balls
-    - [ ] Collision detection
-- [ ] Continuous collision detection
+  - [x] Simulatig balls
+    - [x] Collision detection
+      - [ ] Continuous collision detection
+  - [ ] Make field fit bounds
 - [ ] Multiple balls
   - [ ] Ball-Ball collision detection
   - [ ] The laws of physics
