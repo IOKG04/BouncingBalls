@@ -7,7 +7,7 @@
 - [ ] Single bouncing ball
   - [x] Keyboard input
   - [x] Displaying balls
-    - [ ] Make em not be stretched
+    - [x] Make em not be stretched
   - [x] Simulatig balls
     - [x] Collision detection
       - [ ] Continuous collision detection

@@ -17,7 +17,7 @@ void render_ball(ball b, char *buffer, int width, int height){
     // special case (don't want em not to show up)
     if(b.radius <= 1){
 	int x = (int)b.position.x;
-	int y = (int)b.position.y;
+	int y = (int)(b.position.y / 2);
 	if(x >= 0 && x < width &&
 	   y >= 0 && y < height)
 	    buffer[x + y * width] = '*';
@@ -27,8 +27,8 @@ void render_ball(ball b, char *buffer, int width, int height){
     // normal case
     int x_start = (int)(b.position.x - b.radius) - 1;
     int x_end = (int)(b.position.x + b.radius) + 1;
-    int y_start = (int)(b.position.y - b.radius) - 1;
-    int y_end = (int)(b.position.y + b.radius) + 1;
+    int y_start = (int)((b.position.y - b.radius) / 2) - 1;
+    int y_end = (int)((b.position.y + b.radius) / 2) + 1;
 #define SET_MIN_MAX(d, m) d = d < 0 ? 0 : (d >= m ? m - 1 : d)
     SET_MIN_MAX(x_start, width);
     SET_MIN_MAX(x_end, width);
@@ -37,7 +37,7 @@ void render_ball(ball b, char *buffer, int width, int height){
 #undef SET_MIN_MAX
     for(int x = x_start; x <= x_end; ++x){
 	for(int y = y_start; y <= y_end; ++y){
-	    vec2 ppos = {x, y};
+	    vec2 ppos = {x, y * 2};
 	    if(inside_ball(b, ppos)){
 		buffer[x % width + y * width] = '*';
 	    }

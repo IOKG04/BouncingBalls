@@ -10,10 +10,10 @@
 
 int main(int argc, char **argv){
     char buffer[512];
-    ball b = {5, {6, 6}, {5, 0}};
+    ball b = {3, {6, 6}, {5, 0}};
     printf("\x1b[2J");
     for(;;){
-	base_step_ball(&b, 32, 16);
+	base_step_ball(&b, 32, 32);
 
 	memset(buffer, ' ', sizeof(buffer));
         render_ball(b, buffer, 32, 16);
