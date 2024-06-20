@@ -82,11 +82,8 @@ void wall_collisions_ball(ball *b, double width, double height){
 	    double t_impact = (-b_ + sqrt(discriminant)) / (2 * a_);
 	    double new_velocity = -(b->velocity.y + GRAVITY.y * t_impact);
 	    b->position.y = height - b->radius;
-	    b->velocity.y = new_velocity + GRAVITY.y * (DELTA_TIME / 2 - t_impact) / 2;
+	    b->velocity.y = new_velocity + GRAVITY.y * (DELTA_TIME / 2 - t_impact);
 	    b->position.y += b->velocity.y * (DELTA_TIME - t_impact);
 	}
-
-	/*b->position.y = 2 * height - 2 * b->radius - b->position.y;
-	b->velocity.y = -b->velocity.y;*/
     }
 }
