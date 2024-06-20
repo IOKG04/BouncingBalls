@@ -19,7 +19,5 @@ void render_ball(ball b, char *buffer, int width, int height);
 
 // applies a balls velocity and gravity
 void base_step_ball(ball *b, double width, double height);
-// applies wall collision
-void wall_collisions_ball(ball *b, double width, double height);
 
 #endif

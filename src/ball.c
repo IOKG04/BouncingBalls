@@ -1,7 +1,11 @@
+#include <math.h>
 #include "vec2.h"
 #include "constants.h"
 
 #include "ball.h"
+
+// applies wall collision
+void wall_collisions_ball(ball *b, double width, double height);
 
 // returns squared radius of a ball
 double squared_radius_ball(ball b){
@@ -15,7 +19,7 @@ int inside_ball(ball b, vec2 vec){
 // renderes a ball onto a buffer
 void render_ball(ball b, char *buffer, int width, int height){
     // special case (don't want em not to show up)
-    if(b.radius <= 1){
+    if(b.radius < 1){
 	int x = (int)b.position.x;
 	int y = (int)(b.position.y / 2);
 	if(x >= 0 && x < width &&
@@ -55,21 +59,34 @@ void base_step_ball(ball *b, double width, double height){
 // applies wall collision
 void wall_collisions_ball(ball *b, double width, double height){
     if(b->position.x - b->radius < 0){
-	b->position.x = b->radius;
+	b->position.x = b->radius * 2 - b->position.x;
 	b->velocity.x = -b->velocity.x;
     }
     else if(b->position.x + b->radius > width){
-	b->position.x = width - b->radius;
+	b->position.x = 2 * width - 2 * b->radius - b->position.x;
 	b->velocity.x = -b->velocity.x;
     }
     if(b->position.y + b->radius > height){
-	b->position.y = height - b->radius;
-	b->velocity.y = -b->velocity.y;
+	// thx chatgpt for this part :3
+	b->position.y -= b->velocity.y * DELTA_TIME;
+	b->velocity.y -= GRAVITY.y * DELTA_TIME * .5;
+	double a_ = 0.5 * GRAVITY.y,
+	       b_ = b->velocity.y,
+	       c_ = b->position.y + b->radius - height;
+	double discriminant = b_ * b_ - 4 * a_ * c_;
+	if(discriminant < 0){
+	    b->velocity.y += GRAVITY.y * DELTA_TIME * .5;
+	    b->position.y += b->velocity.y * DELTA_TIME;
+	}
+	else{
+	    double t_impact = (-b_ + sqrt(discriminant)) / (2 * a_);
+	    double new_velocity = -(b->velocity.y + GRAVITY.y * t_impact);
+	    b->position.y = height - b->radius;
+	    b->velocity.y = new_velocity + GRAVITY.y * (DELTA_TIME / 2 - t_impact) / 2;
+	    b->position.y += b->velocity.y * (DELTA_TIME - t_impact);
+	}
+
+	/*b->position.y = 2 * height - 2 * b->radius - b->position.y;
+	b->velocity.y = -b->velocity.y;*/
     }
-#if IS_TOP_CLOSED
-    else if(b->position.y - b->radius < 0){
-	b->position.y = b->radius;
-	b->velocity.y = -b->velocity.y;
-    }
-#endif
 }

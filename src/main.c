@@ -10,7 +10,7 @@
 
 int main(int argc, char **argv){
     char buffer[512];
-    ball b = {3, {6, 6}, {5, 0}};
+    ball b = {3, {6.135, 5.1}, {5, 0}};
     printf("\x1b[2J");
     for(;;){
 	base_step_ball(&b, 32, 32);
@@ -19,27 +19,15 @@ int main(int argc, char **argv){
         render_ball(b, buffer, 32, 16);
 
 	printf("\x1b[d");
-#if IS_TOP_CLOSED
-	printf("+--------------------------------+\n");
-#endif
         for(int i = 0; i < 512; ++i){
 	   if(i % 32 == 0) putchar('|');
 	   putchar(buffer[i]);
 	   if(i % 32 == 31) printf("|\n");
         }
-	printf("+--------------------------------+\n");
+	printf("+================================+\n");
+	printf("{%lf, %lf}, {%lf, %lf}\n", b.position.x, b.position.y, b.velocity.x, b.velocity.y);
 	usleep(STEP_DELAY);
     }
-
-    /*
-    vec2 a = {3, 4};
-    double l = length_vec2(a);
-    vec2 b = normalized_vec2(a);
-    vec2 c = {2, 3};
-    a = cross_vec2(a, c);
-    a = cross_div_vec2(a, c);
-    printf("%lf, {%lf, %lf}, {%lf, %lf}\n", l, b.x, b.y, a.x, a.y);
-    */
 
     /*
     int inp_err_code = initialize_inp();
