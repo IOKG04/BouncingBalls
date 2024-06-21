@@ -10,10 +10,14 @@
   - [x] Simulatig balls
     - [x] Collision detection
       - [x] Continuous collision detection
-  - [ ] Make field fit bounds
-    - [x] Getting terminal size
+  - [x] Make field fit bounds
+    - [x] Get terminal size
   - [ ] Controls
     - [x] Keyboard input
+    - [ ] Spawning balls
+    - [ ] Exiting
+    - [ ] Settings
 - [ ] Multiple balls
+  - [x] Making multiple balls work at all
   - [ ] Ball-Ball collision detection
   - [ ] The laws of physics

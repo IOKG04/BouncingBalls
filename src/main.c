@@ -8,24 +8,49 @@
 #include "ball.h"
 #include "constants.h"
 
+void buffer_malloc_error_check();
+
+int columns, rows, curr_size = 1;
+char *buffer;
+ball_collection *balls;
+
 int main(int argc, char **argv){
-    char buffer[512];
-    ball b = {3, {6.135, 5.1}, {5, 0}};
+    init_collection(&balls);
+
+    addb_collection(balls, (ball){'#', 3, (vec2){3, 3}, (vec2){10, 0}});
+    addb_collection(balls, (ball){'*', 5, (vec2){50, 15}, (vec2){-45, -12.5}});
+    addb_collection(balls, (ball){'+', 1, (vec2){90, 50}, (vec2){GRAVITY.y, 30}});
+
+    printf("\n%i\n", __LINE__);
+
+    buffer = malloc(1);
+    buffer_malloc_error_check();
+
     printf("\x1b[2J");
     for(;;){
-	base_step_ball(&b, 32, 32);
+	get_terminal_size(&columns, &rows);
+	columns -= 2;
+	rows -= 4;
+	if(rows * columns > curr_size){
+	    free(buffer);
+	    buffer = malloc(rows * columns);
+	    buffer_malloc_error_check();
+	    curr_size = rows * columns;
+	}
 
-	memset(buffer, ' ', sizeof(buffer));
-        render_ball(b, buffer, 32, 16);
+	base_step_collection(balls, columns, rows * 2);
+
+	memset(buffer, ' ', columns * rows);
+        render_collection(balls, buffer, columns, rows);
 
 	printf("\x1b[d");
-        for(int i = 0; i < 512; ++i){
-	   if(i % 32 == 0) putchar('|');
-	   putchar(buffer[i]);
-	   if(i % 32 == 31) printf("|\n");
+        for(int i = 0; i < columns * rows; ++i){
+	    if(i % columns == 0) putchar('|');
+	    putchar(buffer[i]);
+	    if(i % columns == columns - 1) printf("|\n");
         }
-	printf("+================================+\n");
-	printf("{%lf, %lf}, {%lf, %lf}\n", b.position.x, b.position.y, b.velocity.x, b.velocity.y);
+	putchar('+'); for(int i = 0; i < columns; ++i) putchar('='); printf("+\n");
+
 	usleep(STEP_DELAY);
     }
 
@@ -50,3 +75,9 @@ int main(int argc, char **argv){
     exit(0);
 }
 
+inline void buffer_malloc_error_check(){
+    if(buffer == NULL){
+	fprintf(stderr, "Error: Buffer allocation went wrong, please help\n");
+	exit(1);
+    }
+}

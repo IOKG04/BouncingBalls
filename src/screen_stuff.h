@@ -7,6 +7,6 @@ void disable_echo();
 void enable_echo();
 
 // gets current terminal size in character rows/columns
-void get_terminal_size(int *rows, int *cols);
+void get_terminal_size(int *columns, int *rows);
 
 #endif

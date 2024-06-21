@@ -22,9 +22,9 @@ void enable_echo(){
 }
 
 // gets current terminal size in character rows/columns
-void get_terminal_size(int *rows, int *cols){
+void get_terminal_size(int *columns, int *rows){
     struct winsize w;
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
     *rows = w.ws_row;
-    *cols = w.ws_col;
+    *columns = w.ws_col;
 }

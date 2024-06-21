@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include "vec2.h"
 #include "constants.h"
@@ -43,7 +45,7 @@ void render_ball(ball b, char *buffer, int width, int height){
 	for(int y = y_start; y <= y_end; ++y){
 	    vec2 ppos = {x, y * 2};
 	    if(inside_ball(b, ppos)){
-		buffer[x % width + y * width] = '*';
+		buffer[x % width + y * width] = b.visual;
 	    }
 	}
     }
@@ -86,4 +88,71 @@ void wall_collisions_ball(ball *b, double width, double height){
 	    b->position.y += b->velocity.y * (DELTA_TIME - t_impact);
 	}
     }
+}
+
+// doubles the capacity of a collection
+int double_collection(ball_collection *bc);
+
+// initializes a collection
+int init_collection(ball_collection **bc){
+    if(*bc != NULL) free_collection(*bc);
+    *bc = malloc(sizeof(ball_collection));
+    if(*bc == NULL){
+	fprintf(stderr, "Error: Something happened while allocating a new ball collection\n");
+	return 1;
+    }
+    (*bc)->balls = malloc(sizeof(ball));
+    if((*bc)->balls == NULL){
+	fprintf(stderr, "Error: Something happened while allocating a new ball collection's balls\n");
+	return 2;
+    }
+    (*bc)->amount = 0;
+    (*bc)->max_amount = 1;
+    return 0;
+}
+// frees a collection
+void free_collection(ball_collection *bc){
+    free(bc->balls);
+    free(bc);
+}
+// adds a ball to a collection
+void addb_collection(ball_collection *bc, ball b){
+    if(bc->amount >= bc->max_amount) double_collection(bc);
+    bc->balls[bc->amount] = b;
+    ++bc->amount;
+}
+// removes a ball from a collection
+void removeb_collection(ball_collection *bc, int index){
+    if(index < 0 || index >= bc->amount) return;
+    for(int i = index; i < bc->amount - 1; ++i) bc->balls[i] = bc->balls[i + 1];
+    --bc->amount;
+}
+
+// applies base_step_ball() to all balls in a collection
+void base_step_collection(ball_collection *bc, double width, double height){
+    for(int i = 0; i < bc->amount; ++i){
+	base_step_ball(&bc->balls[i], width, height);
+    }
+}
+// renderes all balls in a collection
+void render_collection(ball_collection *bc, char *buffer, double width, double height){
+    for(int i = 0; i < bc->amount; ++i){
+	render_ball(bc->balls[i], buffer, width, height);
+    }
+}
+
+// doubles the capacity of a collection
+int double_collection(ball_collection *bc){
+    ball *new_balls = malloc(bc->max_amount * 2 * sizeof(ball));
+    if(new_balls == NULL){
+	fprintf(stderr, "Error while reallocating a ball collection\n");
+	return 1;
+    }
+    ball *old_balls = bc->balls;
+    bc->balls = new_balls;
+    for(int i = 0; i < bc->max_amount; ++i) bc->balls[i] = old_balls[i];
+    free(old_balls);
+
+    bc->max_amount *= 2;
+    return 0;
 }
