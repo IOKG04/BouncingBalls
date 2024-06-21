@@ -26,8 +26,15 @@ int main(int argc, char **argv){
     buffer = malloc(1);
     buffer_malloc_error_check();
 
+    int inp_err_code = initialize_inp();
+    if(inp_err_code != 0){
+	fprintf(stderr, "Error: %i at %s, %i\n", inp_err_code, __FILE__, __LINE__ - 2);
+	exit(inp_err_code);
+    }
+
+    disable_echo();
     printf("\x1b[2J");
-    for(;;){
+    do{
 	get_terminal_size(&columns, &rows);
 	columns -= 2;
 	rows -= 4;
@@ -37,6 +44,8 @@ int main(int argc, char **argv){
 	    buffer_malloc_error_check();
 	    curr_size = rows * columns;
 	}
+
+	test_keys();
 
 	base_step_collection(balls, columns, rows * 2);
 
@@ -51,27 +60,16 @@ int main(int argc, char **argv){
         }
 	putchar('+'); for(int i = 0; i < columns; ++i) putchar('='); printf("+\n");
 
+	print_info_collection(balls);
+	putchar('\n');
+
 	usleep(STEP_DELAY);
-    }
-
-    /*
-    int inp_err_code = initialize_inp();
-    if(inp_err_code != 0){
-	fprintf(stderr, "Error: %i at %s, %i\n", inp_err_code, __FILE__, __LINE__ - 2);
-	exit(inp_err_code);
-    }
-
-    disable_echo();
-    do{
-	test_keys();
-	printf("%i %i\n", is_pressed_key(SPAWN_KEY), is_pressed_down(SPAWN_KEY));
-	usleep(500000);
     } while(!is_pressed_key(EXIT_KEY));
     enable_echo();
 
+    free(buffer);
     close_inp();
-    */
-
+    free_collection(balls);
     exit(0);
 }
 

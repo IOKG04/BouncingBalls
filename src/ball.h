@@ -42,4 +42,7 @@ void base_step_collection(ball_collection *bc, double width, double height);
 // renderes all balls in a collection
 void render_collection(ball_collection *bc, char *buffer, double width, double height);
 
+// prints info about all balls in a collection to stdout
+void print_info_collection(ball_collection *bc);
+
 #endif

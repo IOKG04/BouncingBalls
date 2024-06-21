@@ -21,13 +21,13 @@ int inside_ball(ball b, vec2 vec){
 // renderes a ball onto a buffer
 void render_ball(ball b, char *buffer, int width, int height){
     // special case (don't want em not to show up)
-    if(b.radius < 1){
+    if(b.radius <= 1){
 	int x = (int)b.position.x;
-	int y = (int)(b.position.y / 2);
+	int y = (int)(b.position.y / 2 + 0.5);
 	if(x >= 0 && x < width &&
 	   y >= 0 && y < height)
-	    buffer[x + y * width] = '*';
-	return;
+	    buffer[x + y * width] = b.visual;
+	//return;
     }
 
     // normal case
@@ -62,11 +62,11 @@ void base_step_ball(ball *b, double width, double height){
 void wall_collisions_ball(ball *b, double width, double height){
     if(b->position.x - b->radius < 0){
 	b->position.x = b->radius * 2 - b->position.x;
-	b->velocity.x = -b->velocity.x;
+	b->velocity.x = -b->velocity.x * sqrt(ENERGY_LOSS_FACTOR.x);
     }
     else if(b->position.x + b->radius > width){
 	b->position.x = 2 * width - 2 * b->radius - b->position.x;
-	b->velocity.x = -b->velocity.x;
+	b->velocity.x = -b->velocity.x * sqrt(ENERGY_LOSS_FACTOR.x);
     }
     if(b->position.y + b->radius > height){
 	// thx chatgpt for this part :3
@@ -82,7 +82,7 @@ void wall_collisions_ball(ball *b, double width, double height){
 	}
 	else{
 	    double t_impact = (-b_ + sqrt(discriminant)) / (2 * a_);
-	    double new_velocity = -(b->velocity.y + GRAVITY.y * t_impact);
+	    double new_velocity = -(b->velocity.y + GRAVITY.y * t_impact) * sqrt(ENERGY_LOSS_FACTOR.y);
 	    b->position.y = height - b->radius;
 	    b->velocity.y = new_velocity + GRAVITY.y * (DELTA_TIME / 2 - t_impact);
 	    b->position.y += b->velocity.y * (DELTA_TIME - t_impact);
@@ -155,4 +155,13 @@ int double_collection(ball_collection *bc){
 
     bc->max_amount *= 2;
     return 0;
+}
+
+// prints info about all balls in a collection to stdout
+void print_info_collection(ball_collection *bc){
+    putchar('{');
+    for(int i = 0; i < bc->amount; ++i){
+	printf("{{%lf, %lf}, {%lf, %lf}}, ", bc->balls[i].position.x, bc->balls[i].position.y, bc->balls[i].velocity.x, bc->balls[i].velocity.y);
+    }
+    putchar('}');
 }
