@@ -2,11 +2,15 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <time.h>
 #include "inp.h"
 #include "screen_stuff.h"
 #include "vec2.h"
 #include "ball.h"
 #include "constants.h"
+
+#define RANDOM_DOUBLE (rand() / (double)RAND_MAX)
+#define RANDOM_DOUBLE_SIGNED (RANDOM_DOUBLE * 2 - 1)
 
 void buffer_malloc_error_check();
 
@@ -15,11 +19,9 @@ char *buffer;
 ball_collection *balls;
 
 int main(int argc, char **argv){
-    init_collection(&balls);
+    srand(time(NULL));
 
-    addb_collection(balls, (ball){'#', 3, (vec2){3, 3}, (vec2){10, 0}});
-    addb_collection(balls, (ball){'*', 5, (vec2){50, 15}, (vec2){-45, -12.5}});
-    addb_collection(balls, (ball){'+', 1, (vec2){90, 50}, (vec2){GRAVITY.y, 30}});
+    init_collection(&balls);
 
     printf("\n%i\n", __LINE__);
 
@@ -46,6 +48,13 @@ int main(int argc, char **argv){
 	}
 
 	test_keys();
+
+	if(is_pressed_down(SPAWN_KEY)){
+	    double nb_radius = RANDOM_DOUBLE * (RANDOM_RADIUS_MAX - RANDOM_RADIUS_MIN) + RANDOM_RADIUS_MIN;
+	    vec2 nb_offset = (vec2){RANDOM_DOUBLE_SIGNED * RANDOM_OFFSET_MAX.x + columns * .5, RANDOM_DOUBLE_SIGNED * RANDOM_OFFSET_MAX.y + rows * .5};
+	    vec2 nb_velocity = (vec2){RANDOM_DOUBLE_SIGNED * RANDOM_VELOCITY_MAX.x, RANDOM_DOUBLE_SIGNED * RANDOM_VELOCITY_MAX.y};
+	    addb_collection(balls, (ball){'#', nb_radius, nb_offset, nb_velocity});
+	}
 
 	base_step_collection(balls, columns, rows * 2);
 

@@ -13,11 +13,12 @@
     - [x] Losing energy
   - [x] Make field fit bounds
     - [x] Get terminal size
-  - [ ] Controls
+  - [x] Controls
     - [x] Keyboard input
-    - [ ] Spawning more balls
+    - [x] Spawning more balls
     - [x] Exiting
-    - [ ] Settings
+  - [ ] Settings
+    - [ ] Controls for those
 - [ ] Multiple balls
   - [x] Making multiple balls work at all
   - [ ] Ball-Ball collision detection
