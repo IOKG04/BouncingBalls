@@ -53,3 +53,7 @@ double length_vec2(vec2 vec){
 vec2 normalized_vec2(vec2 vec){
     return scale_vec2(vec, 1 / length_vec2(vec));
 }
+// returns dot product of two vec2s
+double dot_vec2(vec2 a, vec2 b){
+    return a.x * b.x + a.y * b.y;
+}

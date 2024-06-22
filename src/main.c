@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <time.h>
+#include <math.h>
 #include "inp.h"
 #include "screen_stuff.h"
 #include "vec2.h"
@@ -56,7 +57,7 @@ int main(int argc, char **argv){
 	    addb_collection(balls, (ball){'#', nb_radius, nb_offset, nb_velocity});
 	}
 
-	base_step_collection(balls, columns, rows * 2);
+	step_collection(balls, columns, rows * 2);
 
 	memset(buffer, ' ', columns * rows);
         render_collection(balls, buffer, columns, rows);
@@ -70,7 +71,13 @@ int main(int argc, char **argv){
 	putchar('+'); for(int i = 0; i < columns; ++i) putchar('='); printf("+\n");
 
 	print_info_collection(balls);
-	putchar('\n');
+	double total_energy = 0;
+	for(int i = 0; i < balls->amount; ++i){
+	    double m = M_PI * balls->balls[i].radius * balls->balls[i].radius * DENSITY_BALL;
+	    total_energy += m * GRAVITY.y * (rows * 2 - balls->balls[i].position.y); // potential
+	    total_energy += .5 * squared_length_vec2(balls->balls[i].velocity) * m;  // kinetic
+	}
+	printf("\nTotal Energy: %lf\n", total_energy);
 
 	usleep(STEP_DELAY);
     } while(!is_pressed_key(EXIT_KEY));

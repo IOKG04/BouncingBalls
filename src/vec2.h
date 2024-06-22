@@ -24,5 +24,7 @@ double squared_length_vec2(vec2 vec);
 double length_vec2(vec2 vec);
 // returns a version of a vec2 where its size is 1
 vec2 normalized_vec2(vec2 vec);
+// returns dot product of two vec2s
+double dot_vec2(vec2 a, vec2 b);
 
 #endif

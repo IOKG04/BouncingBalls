@@ -17,13 +17,13 @@
     - [x] Keyboard input
     - [x] Spawning more balls
     - [x] Exiting
-  - [ ] Settings
-    - [ ] Controls for those
-- [ ] Multiple balls
+- [x] Multiple balls
   - [x] Making multiple balls work at all
-  - [ ] Ball-Ball collision detection
-  - [ ] The laws of physics
-- [ ] Improved delta time
+  - [x] Ball-Ball collision detection
+    - [x] The laws of physics
+- [ ] Settings
+  - [ ] Controls for those
+  - [ ] Improved delta time
 
 ## Inspiration/Motivation
 

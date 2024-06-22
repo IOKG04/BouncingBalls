@@ -37,8 +37,8 @@ void addb_collection(ball_collection *bc, ball b);
 // removes a ball from a collection
 void removeb_collection(ball_collection *bc, int index);
 
-// applies base_step_ball() to all balls in a collection
-void base_step_collection(ball_collection *bc, double width, double height);
+// applies step functions to all balls in a collection
+void step_collection(ball_collection *bc, double width, double height);
 // renderes all balls in a collection
 void render_collection(ball_collection *bc, char *buffer, double width, double height);
 

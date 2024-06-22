@@ -8,6 +8,8 @@
 
 // applies wall collision
 void wall_collisions_ball(ball *b, double width, double height);
+// figures out and resolves ball-ball collisions
+int ball_ball_collision(ball *a, ball *b);
 
 // returns squared radius of a ball
 double squared_radius_ball(ball b){
@@ -62,11 +64,11 @@ void base_step_ball(ball *b, double width, double height){
 void wall_collisions_ball(ball *b, double width, double height){
     if(b->position.x - b->radius < 0){
 	b->position.x = b->radius * 2 - b->position.x;
-	b->velocity.x = -b->velocity.x * sqrt(ENERGY_LOSS_FACTOR.x);
+	b->velocity.x = -b->velocity.x * COEFFICIENT_OF_RESTITUTION_WALLS.x;
     }
     else if(b->position.x + b->radius > width){
 	b->position.x = 2 * width - 2 * b->radius - b->position.x;
-	b->velocity.x = -b->velocity.x * sqrt(ENERGY_LOSS_FACTOR.x);
+	b->velocity.x = -b->velocity.x * COEFFICIENT_OF_RESTITUTION_WALLS.x;
     }
     if(b->position.y + b->radius > height){
 	// thx chatgpt for this part :3
@@ -82,12 +84,44 @@ void wall_collisions_ball(ball *b, double width, double height){
 	}
 	else{
 	    double t_impact = (-b_ + sqrt(discriminant)) / (2 * a_);
-	    double new_velocity = -(b->velocity.y + GRAVITY.y * t_impact) * sqrt(ENERGY_LOSS_FACTOR.y);
+	    double new_velocity = -(b->velocity.y + GRAVITY.y * t_impact) * COEFFICIENT_OF_RESTITUTION_WALLS.y;
 	    b->position.y = height - b->radius;
 	    b->velocity.y = new_velocity + GRAVITY.y * (DELTA_TIME / 2 - t_impact);
 	    b->position.y += b->velocity.y * (DELTA_TIME - t_impact);
 	}
     }
+}
+
+// figures out and resolves ball-ball collisions
+int ball_ball_collision(ball *a, ball *b){
+    double distance = length_vec2(subtract_vec2(b->position, a->position));
+    if(distance > a->radius + b->radius) return 0;
+
+    // adjust ball velocities (gotta thank chatgpt for this one too)
+    vec2 normal = (vec2){(b->position.x - a->position.x) / distance, (b->position.y - a->position.y) / distance};
+    vec2 tangent = (vec2){-normal.y, normal.x};
+    double van = a->velocity.x * normal.x + a->velocity.y * normal.y;
+    double vat = a->velocity.x * tangent.x + a->velocity.y * tangent.y;
+    double vbn = b->velocity.x * normal.x + b->velocity.y * normal.y;
+    double vbt = b->velocity.x * tangent.x + b->velocity.y * tangent.y;
+    double mass_a = M_PI * a->radius * a->radius * DENSITY_BALL;
+    double mass_b = M_PI * b->radius * b->radius * DENSITY_BALL;
+    double v_rel = vbn - van; // Relative velocity along the normal
+    van = van + (1 + COEFFICIENT_OF_RESTITUTION_BALLS) * (v_rel * mass_b) / (mass_a + mass_b);
+    vbn = vbn - (1 + COEFFICIENT_OF_RESTITUTION_BALLS) * (v_rel * mass_a) / (mass_a + mass_b);
+    a->velocity.x = van * normal.x + vat * tangent.x;
+    a->velocity.y = van * normal.y + vat * tangent.y;
+    b->velocity.x = vbn * normal.x + vbt * tangent.x;
+    b->velocity.y = vbn * normal.y + vbt * tangent.y;
+
+    // adjust ball positions
+    double overlap = (a->radius + b->radius) - distance;
+    double correction_a = overlap * (mass_b / (mass_a + mass_b));
+    double correction_b = overlap * (mass_a / (mass_a + mass_b));
+    a->position = subtract_vec2(a->position, scale_vec2(normal, correction_a));
+    b->position = add_vec2(b->position, scale_vec2(normal, correction_b));
+
+    return 1;
 }
 
 // doubles the capacity of a collection
@@ -128,10 +162,14 @@ void removeb_collection(ball_collection *bc, int index){
     --bc->amount;
 }
 
-// applies base_step_ball() to all balls in a collection
-void base_step_collection(ball_collection *bc, double width, double height){
+// applies step functions to all balls in a collection
+void step_collection(ball_collection *bc, double width, double height){
     for(int i = 0; i < bc->amount; ++i){
 	base_step_ball(&bc->balls[i], width, height);
+	for(int j = 0; j < bc->amount; ++j){
+	    if(i == j) continue;
+	    ball_ball_collision(&bc->balls[i], &bc->balls[j]);
+	}
     }
 }
 // renderes all balls in a collection
